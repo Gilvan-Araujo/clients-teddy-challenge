@@ -13,6 +13,7 @@
     "@types/react": "~18.2.14",
     "@types/react-native": "~0.70.6",
     "commitizen": "^4.3.1",
+    "husky": "^9.1.7",
     "typescript": "~5.3.3"
   },
   "name": "teddy-clients",
@@ -22,6 +23,7 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "prepare": "husky"
   }
 }
