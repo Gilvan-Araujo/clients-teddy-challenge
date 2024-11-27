@@ -1,4 +1,5 @@
 {
   "name": "teddy-clients",
-  "slug": "teddy-clients"
+  "slug": "teddy-clients",
+  "newArchEnabled": true
 }
