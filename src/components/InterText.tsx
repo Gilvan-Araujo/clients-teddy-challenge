@@ -1,14 +1,14 @@
-import { Text, TextStyle } from "react-native";
+import { Text, TextStyle } from 'react-native';
 
 enum TextWeight {
-  regular = "Inter_400Regular",
-  bold = "Inter_700Bold",
+  regular = 'Inter_400Regular',
+  bold = 'Inter_700Bold',
 }
 
 export default function InterText({
   children,
   style,
-  weight = "regular",
+  weight = 'regular',
 }: {
   children: React.ReactNode;
   style?: TextStyle;

@@ -1,10 +1,11 @@
 import {
-  useFonts,
   Inter_400Regular,
   Inter_700Bold,
-} from "@expo-google-fonts/inter";
-import Greetings from "./src/screens/Greetings";
-import { ActivityIndicator, SafeAreaView } from "react-native";
+  useFonts,
+} from '@expo-google-fonts/inter';
+import { ActivityIndicator, SafeAreaView } from 'react-native';
+
+import Greetings from './src/screens/Greetings';
 
 export default function App() {
   let [fontsLoaded] = useFonts({
@@ -17,8 +18,8 @@ export default function App() {
       <SafeAreaView
         style={{
           flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
+          justifyContent: 'center',
+          alignItems: 'center',
         }}
       >
         <ActivityIndicator size="large" color="#EC6724" />
