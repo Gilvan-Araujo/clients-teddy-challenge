@@ -5,10 +5,10 @@ import {
   Inter_700Bold,
   useFonts,
 } from '@expo-google-fonts/inter';
-import { NavigationContainer } from '@react-navigation/native';
-import { ActivityIndicator, SafeAreaView } from 'react-native';
 
-import Drawer from './src/components/Drawer';
+import { Loading } from '@components/Loading';
+
+import { Routes } from './src/routes';
 
 export default function App() {
   let [fontsLoaded] = useFonts({
@@ -16,23 +16,5 @@ export default function App() {
     Inter_700Bold,
   });
 
-  if (!fontsLoaded) {
-    return (
-      <SafeAreaView
-        style={{
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-      >
-        <ActivityIndicator size="large" color="#EC6724" />
-      </SafeAreaView>
-    );
-  }
-
-  return (
-    <NavigationContainer>
-      <Drawer />
-    </NavigationContainer>
-  );
+  return <>{fontsLoaded ? <Routes /> : <Loading />}</>;
 }
