@@ -1,14 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 import React, { useEffect, useState } from 'react';
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 
+import { Card } from './Card';
 import InterText from './InterText';
 
 const PaginationComponent = ({ data }) => {
@@ -108,7 +103,7 @@ const PaginationComponent = ({ data }) => {
           data={visibleData}
           contentContainerStyle={{ gap: 20 }}
           keyExtractor={(_item, index) => index.toString()}
-          renderItem={({ item }) => <Text style={styles.item}>{item}</Text>}
+          renderItem={() => <Card />}
         />
 
         <TouchableOpacity
@@ -178,11 +173,6 @@ const styles = StyleSheet.create({
   },
   itemCount: {
     fontSize: 18,
-  },
-  item: {
-    padding: 15,
-    borderBottomWidth: 1,
-    borderColor: '#ccc',
   },
   pagination: {
     flexDirection: 'row',
