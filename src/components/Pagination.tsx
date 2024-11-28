@@ -3,6 +3,8 @@ import { Picker } from '@react-native-picker/picker';
 import React, { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 
+import { CURRENT_PAGE_COLLECTION } from '@storage/storageConfig';
+
 import { Card } from './Card';
 import InterText from './InterText';
 
@@ -12,14 +14,14 @@ const PaginationComponent = ({ data }) => {
 
   useEffect(() => {
     const loadPage = async () => {
-      const savedPage = await AsyncStorage.getItem('currentPage');
+      const savedPage = await AsyncStorage.getItem(CURRENT_PAGE_COLLECTION);
       if (savedPage) setCurrentPage(Number(savedPage));
     };
     loadPage();
   }, []);
 
   useEffect(() => {
-    AsyncStorage.setItem('currentPage', currentPage.toString());
+    AsyncStorage.setItem(CURRENT_PAGE_COLLECTION, currentPage.toString());
   }, [currentPage]);
 
   const totalPages = Math.ceil(data.length / itemsPerPage);
