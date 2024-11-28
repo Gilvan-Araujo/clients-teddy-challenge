@@ -1,9 +1,11 @@
-// create a base react native component that can be used to create a new screen
+import { useNavigation } from '@react-navigation/native';
 import { TextInput, TouchableOpacity, View } from 'react-native';
 
 import InterText from '../components/InterText';
 
 export default function Greetings() {
+  const navigation = useNavigation();
+
   return (
     <View
       style={{
@@ -36,6 +38,7 @@ export default function Greetings() {
           backgroundColor: '#EC6724',
           alignItems: 'center',
         }}
+        onPress={() => navigation.navigate('home')}
       >
         <InterText weight="bold" style={{ fontSize: 24, color: '#FFF' }}>
           Entrar
