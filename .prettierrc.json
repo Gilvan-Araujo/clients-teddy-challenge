@@ -7,6 +7,10 @@
   "importOrder": [
     "react-native-gesture-handler",
     "<THIRD_PARTY_MODULES>",
+    "@assets/*",
+    "@components/*",
+    "@screens/*",
+    "@storage/*",
     "^[./]"
   ],
   "importOrderSeparation": true,
