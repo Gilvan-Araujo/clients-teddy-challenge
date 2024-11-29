@@ -1,13 +1,18 @@
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
+import { useState } from 'react';
 import { View } from 'react-native';
 
-import EditIcon from '../../assets/edit.svg';
-import PlusIcon from '../../assets/plus.svg';
-import TrashIcon from '../../assets/trash.svg';
-import InterText from './InterText';
+import EditIcon from '@assets/edit.svg';
+import MinusIcon from '@assets/minus.svg';
+import PlusIcon from '@assets/plus.svg';
+import TrashIcon from '@assets/trash.svg';
+
+import InterText from '@components/InterText';
 
 export const Card = () => {
+  const [toggle, setToggle] = useState(false);
+
   return (
     <View
       style={{
@@ -41,8 +46,8 @@ export const Card = () => {
         <TouchableOpacity>
           <EditIcon />
         </TouchableOpacity>
-        <TouchableOpacity>
-          <PlusIcon />
+        <TouchableOpacity onPress={() => setToggle(!toggle)}>
+          {toggle ? <MinusIcon /> : <PlusIcon />}
         </TouchableOpacity>
         <TouchableOpacity>
           <TrashIcon />
