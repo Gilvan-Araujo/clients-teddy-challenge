@@ -10,7 +10,13 @@ import TrashIcon from '@assets/trash.svg';
 
 import InterText from '@components/InterText';
 
-export const Card = () => {
+import { Client } from './Pagination';
+
+type CardProps = {
+  client: Client;
+};
+
+export const Card = ({ client }: CardProps) => {
   const [toggle, setToggle] = useState(false);
 
   return (
@@ -26,13 +32,21 @@ export const Card = () => {
     >
       <View style={{ gap: 10, alignItems: 'center' }}>
         <InterText weight="bold" style={{ fontSize: 16, lineHeight: 20 }}>
-          Eduardo
+          {client.name}
         </InterText>
         <InterText style={{ fontSize: 14, lineHeight: 17 }}>
-          Salário: R$ 3.500,00
+          Salário: R${' '}
+          {client.salary.toLocaleString('pt-BR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
         </InterText>
         <InterText style={{ fontSize: 14, lineHeight: 17 }}>
-          Empresa: R$ 120.000,00
+          Empresa: R${' '}
+          {client.companyValuation.toLocaleString('pt-BR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
         </InterText>
       </View>
 

@@ -3,37 +3,75 @@ import { Picker } from '@react-native-picker/picker';
 import React, { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 
+import { api } from '@api/index';
+
+import { Card } from '@components/Card';
+import InterText from '@components/InterText';
+
 import { CURRENT_PAGE_COLLECTION } from '@storage/storageConfig';
 
-import { Card } from './Card';
-import InterText from './InterText';
+export type Client = {
+  id: number;
+  name: string;
+  salary: number;
+  companyValuation: number;
+};
 
-const PaginationComponent = ({ data }) => {
+interface ApiResponse {
+  clients: Client[];
+  totalPages: number;
+  currentPage: number;
+}
+
+const PaginationComponent = () => {
+  const [clients, setClients] = useState<Client[]>([]);
+  const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(4);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const fetchClients = async (page: number, limit: number) => {
+    try {
+      setIsLoading(true);
+      const response = await api.get<ApiResponse>('/users', {
+        params: {
+          page,
+          limit,
+        },
+      });
+
+      const { clients: responseClients, totalPages: responseTotalPages } =
+        response.data;
+
+      setClients(responseClients);
+      setTotalPages(responseTotalPages);
+    } catch (error) {
+      console.error('Error fetching clients:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const loadPage = async () => {
+    const loadInitialData = async () => {
       const savedPage = await AsyncStorage.getItem(CURRENT_PAGE_COLLECTION);
-      if (savedPage) setCurrentPage(Number(savedPage));
+      const initialPage = savedPage ? Number(savedPage) : 1;
+      setCurrentPage(initialPage);
+      fetchClients(initialPage, itemsPerPage);
     };
-    loadPage();
+
+    loadInitialData();
   }, []);
 
   useEffect(() => {
-    AsyncStorage.setItem(CURRENT_PAGE_COLLECTION, currentPage.toString());
-  }, [currentPage]);
+    fetchClients(currentPage, itemsPerPage);
+  }, [currentPage, itemsPerPage]);
 
-  const totalPages = Math.ceil(data.length / itemsPerPage);
-
-  const paginate = (page) => {
-    if (page >= 1 && page <= totalPages) setCurrentPage(page);
+  const paginate = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
   };
-
-  const visibleData = data.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage,
-  );
 
   const generatePageNumbers = () => {
     const pageNumbers = [];
@@ -74,7 +112,7 @@ const PaginationComponent = ({ data }) => {
     <View style={styles.container}>
       <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
         <InterText weight="bold" style={styles.itemCount}>
-          {data.length}{' '}
+          {clients.length}{' '}
         </InterText>
         <InterText style={styles.itemCount}>clientes encontrados:</InterText>
       </View>
@@ -96,28 +134,28 @@ const PaginationComponent = ({ data }) => {
         >
           <Picker.Item label="4" value="4" />
           <Picker.Item label="8" value="8" />
-          <Picker.Item label="16" value="16" />
+          <Picker.Item label="15" value="15" />
         </Picker>
       </View>
 
       <View style={styles.contentContainer}>
         <FlatList
-          data={visibleData}
+          data={clients}
           contentContainerStyle={{ gap: 20 }}
-          keyExtractor={(_item, index) => index.toString()}
-          renderItem={() => <Card />}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => <Card client={item} />}
+          refreshing={isLoading}
+          onRefresh={() => fetchClients(currentPage, itemsPerPage)}
         />
 
         <TouchableOpacity
           style={{
             alignSelf: 'center',
-
             width: '100%',
             padding: 11,
             borderColor: '#EC6724',
             borderWidth: 2,
             borderRadius: 4,
-
             marginTop: 20,
             marginBottom: 20,
           }}
