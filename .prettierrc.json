@@ -10,6 +10,7 @@
     "@assets/*",
     "@api/*",
     "@components/*",
+    "@context/*",
     "@screens/*",
     "@storage/*",
     "@types/*",
