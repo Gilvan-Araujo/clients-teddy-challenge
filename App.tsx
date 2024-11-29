@@ -8,6 +8,8 @@ import {
 
 import { Loading } from '@components/Loading';
 
+import SelectedClientsProvider from '@context/SelectedClientsContext';
+
 import { Routes } from './src/routes';
 
 export default function App() {
@@ -16,5 +18,9 @@ export default function App() {
     Inter_700Bold,
   });
 
-  return <>{fontsLoaded ? <Routes /> : <Loading />}</>;
+  return (
+    <SelectedClientsProvider>
+      {fontsLoaded ? <Routes /> : <Loading />}
+    </SelectedClientsProvider>
+  );
 }
