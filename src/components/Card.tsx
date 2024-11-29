@@ -1,6 +1,6 @@
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import { useState } from 'react';
+import { useRoute } from '@react-navigation/native';
 import { View } from 'react-native';
 
 import EditIcon from '@assets/edit.svg';
@@ -10,6 +10,8 @@ import TrashIcon from '@assets/trash.svg';
 
 import InterText from '@components/InterText';
 
+import { useSelectedClients } from '@context/SelectedClientsContext';
+
 import { Client } from './Pagination';
 
 type CardProps = {
@@ -17,7 +19,16 @@ type CardProps = {
 };
 
 export const Card = ({ client }: CardProps) => {
-  const [toggle, setToggle] = useState(false);
+  const route = useRoute();
+  const { addClient, removeClient, isClientSelected } = useSelectedClients();
+
+  const toggleSelection = () => {
+    if (isClientSelected(client.id)) {
+      removeClient(client.id);
+    } else {
+      addClient(client);
+    }
+  };
 
   return (
     <View
@@ -34,6 +45,7 @@ export const Card = ({ client }: CardProps) => {
         <InterText weight="bold" style={{ fontSize: 16, lineHeight: 20 }}>
           {client.name}
         </InterText>
+
         <InterText style={{ fontSize: 14, lineHeight: 17 }}>
           Salário: R${' '}
           {client.salary.toLocaleString('pt-BR', {
@@ -41,6 +53,7 @@ export const Card = ({ client }: CardProps) => {
             maximumFractionDigits: 2,
           })}
         </InterText>
+
         <InterText style={{ fontSize: 14, lineHeight: 17 }}>
           Empresa: R${' '}
           {client.companyValuation.toLocaleString('pt-BR', {
@@ -53,19 +66,28 @@ export const Card = ({ client }: CardProps) => {
       <View
         style={{
           flexDirection: 'row',
-          justifyContent: 'space-between',
+          justifyContent: route.name === 'home' ? 'space-between' : 'flex-end',
           width: '100%',
         }}
       >
-        <TouchableOpacity>
-          <EditIcon />
+        <TouchableOpacity onPress={toggleSelection}>
+          {isClientSelected(client.id) ? (
+            <MinusIcon width={16} height={16} />
+          ) : (
+            <PlusIcon width={16} height={16} />
+          )}
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => setToggle(!toggle)}>
-          {toggle ? <MinusIcon /> : <PlusIcon />}
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <TrashIcon />
-        </TouchableOpacity>
+
+        {route.name === 'home' && (
+          <>
+            <TouchableOpacity>
+              <EditIcon />
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <TrashIcon />
+            </TouchableOpacity>
+          </>
+        )}
       </View>
     </View>
   );
