@@ -1,6 +1,7 @@
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { useRoute } from '@react-navigation/native';
+import { useState } from 'react';
 import { View } from 'react-native';
 
 import EditIcon from '@assets/edit.svg';
@@ -8,25 +9,46 @@ import MinusIcon from '@assets/minus.svg';
 import PlusIcon from '@assets/plus.svg';
 import TrashIcon from '@assets/trash.svg';
 
+import { api } from '@api/index';
+
 import InterText from '@components/InterText';
 
 import { useSelectedClients } from '@context/SelectedClientsContext';
 
+import DeleteClientModal from './DeleteClientModal';
 import { Client } from './Pagination';
 
 type CardProps = {
   client: Client;
+  onDelete: () => void;
 };
 
-export const Card = ({ client }: CardProps) => {
+export const Card = ({ client, onDelete }: CardProps) => {
   const route = useRoute();
   const { addClient, removeClient, isClientSelected } = useSelectedClients();
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const toggleSelection = () => {
     if (isClientSelected(client.id)) {
       removeClient(client.id);
     } else {
       addClient(client);
+    }
+  };
+
+  const handleDeleteClient = async () => {
+    try {
+      setIsDeleting(true);
+      console.log('Deleting client:', client.id);
+      await api.delete(`/users/${client.id}`);
+      removeClient(client.id);
+      setModalVisible(false);
+      onDelete(); // Call the onDelete callback to trigger refresh
+    } catch (error) {
+      console.error('Error deleting client:', error);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -83,12 +105,22 @@ export const Card = ({ client }: CardProps) => {
             <TouchableOpacity>
               <EditIcon />
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setModalVisible(true)}
+              disabled={isDeleting}
+            >
               <TrashIcon />
             </TouchableOpacity>
           </>
         )}
       </View>
+
+      <DeleteClientModal
+        clientName={client.name}
+        visible={isModalVisible}
+        onClose={() => setModalVisible(false)}
+        onConfirm={handleDeleteClient}
+      />
     </View>
   );
 };

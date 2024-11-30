@@ -26,9 +26,10 @@ interface ApiResponse {
 const PaginationComponent = () => {
   const [clients, setClients] = useState<Client[]>([]);
   const [totalPages, setTotalPages] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState<string>('8');
+  const [itemsPerPage, setItemsPerPage] = useState<string>('1');
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const fetchClients = async (page: number, limit: number) => {
     try {
@@ -45,6 +46,10 @@ const PaginationComponent = () => {
 
       setClients(responseClients);
       setTotalPages(responseTotalPages);
+
+      if (page > responseTotalPages) {
+        setCurrentPage(responseTotalPages);
+      }
     } catch (error) {
       console.error('Error fetching clients:', error);
     } finally {
@@ -65,12 +70,16 @@ const PaginationComponent = () => {
 
   useEffect(() => {
     fetchClients(currentPage, Number(itemsPerPage));
-  }, [currentPage, itemsPerPage]);
+  }, [currentPage, itemsPerPage, refreshKey]);
 
   const paginate = (page: number) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
     }
+  };
+
+  const handleClientDeleted = () => {
+    setRefreshKey((prev) => prev + 1);
   };
 
   const generatePageNumbers = () => {
@@ -144,7 +153,9 @@ const PaginationComponent = () => {
           data={clients}
           contentContainerStyle={{ gap: 20 }}
           keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => <Card client={item} />}
+          renderItem={({ item }) => (
+            <Card client={item} onDelete={handleClientDeleted} />
+          )}
           refreshing={isLoading}
           onRefresh={() => fetchClients(currentPage, Number(itemsPerPage))}
         />
