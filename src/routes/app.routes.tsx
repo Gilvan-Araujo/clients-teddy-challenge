@@ -1,22 +1,63 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   DrawerToggleButton,
   createDrawerNavigator,
 } from '@react-navigation/drawer';
-import React from 'react';
-import { Image, SafeAreaView } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
+import {
+  Image,
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 import ClientsIcon from '@assets/clients.svg';
 import HomeIcon from '@assets/home.svg';
 import ProductsIcon from '@assets/products.svg';
+
+import InterText from '@components/InterText';
 
 import Clients from '@screens/Clients';
 import Greetings from '@screens/Greetings';
 import Home from '@screens/Home';
 import Products from '@screens/Products';
 
+import { USERNAME_COLLECTION } from '@storage/storageConfig';
+
 const DrawerNavigator = createDrawerNavigator();
 
 export const AppRoutes = () => {
+  const navigation = useNavigation();
+  const [username, setUsername] = useState('');
+
+  const updateUsername = async () => {
+    const storedUsername = await AsyncStorage.getItem(USERNAME_COLLECTION);
+    setUsername(storedUsername || '');
+  };
+
+  useEffect(() => {
+    updateUsername();
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', updateUsername);
+    return unsubscribe;
+  }, [navigation]);
+
+  // Add a new effect to listen for state changes
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('state', updateUsername);
+    return unsubscribe;
+  }, [navigation]);
+
+  const handleLogout = async () => {
+    await AsyncStorage.removeItem(USERNAME_COLLECTION);
+    navigation.navigate('greetings');
+    updateUsername();
+  };
+
   return (
     <DrawerNavigator.Navigator
       id={undefined}
@@ -29,15 +70,19 @@ export const AppRoutes = () => {
           <DrawerToggleButton {...props} tintColor="#666666" />
         ),
         headerTitle: () => (
-          <Image
-            source={require('@assets/teddy-logo.png')}
-            style={{ maxWidth: 70, maxHeight: 35 }}
-          />
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+            <Image
+              source={require('@assets/teddy-logo.png')}
+              style={{ maxWidth: 70, maxHeight: 35 }}
+            />
+            <InterText style={{ fontSize: 16 }}>Olá, {username}</InterText>
+          </View>
         ),
-
         drawerActiveTintColor: '#EC6724',
+        drawerContentContainerStyle: { flex: 1 },
+        drawerContentStyle: { flex: 1 },
       }}
-      initialRouteName="greetings"
+      initialRouteName={username ? 'home' : 'greetings'}
     >
       <DrawerNavigator.Screen
         name="home"
@@ -105,6 +150,29 @@ export const AppRoutes = () => {
             <Products />
           </SafeAreaView>
         )}
+      </DrawerNavigator.Screen>
+
+      <DrawerNavigator.Screen
+        name="logout"
+        options={{
+          title: 'Sair',
+          drawerLabel: () => (
+            <InterText style={{ textAlign: 'right' }}>Sair</InterText>
+          ),
+          drawerItemStyle: {
+            marginTop: 'auto',
+            borderTopWidth: 1,
+            borderTopColor: '#DDDDDD',
+            paddingTop: 10,
+          },
+        }}
+        listeners={{
+          drawerItemPress: () => {
+            handleLogout();
+          },
+        }}
+      >
+        {() => null}
       </DrawerNavigator.Screen>
     </DrawerNavigator.Navigator>
   );
