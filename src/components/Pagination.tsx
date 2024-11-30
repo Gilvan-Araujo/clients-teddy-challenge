@@ -26,7 +26,7 @@ interface ApiResponse {
 const PaginationComponent = () => {
   const [clients, setClients] = useState<Client[]>([]);
   const [totalPages, setTotalPages] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState(4);
+  const [itemsPerPage, setItemsPerPage] = useState<string>('8');
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -57,14 +57,14 @@ const PaginationComponent = () => {
       const savedPage = await AsyncStorage.getItem(CURRENT_PAGE_COLLECTION);
       const initialPage = savedPage ? Number(savedPage) : 1;
       setCurrentPage(initialPage);
-      fetchClients(initialPage, itemsPerPage);
+      fetchClients(initialPage, Number(itemsPerPage));
     };
 
     loadInitialData();
   }, []);
 
   useEffect(() => {
-    fetchClients(currentPage, itemsPerPage);
+    fetchClients(currentPage, Number(itemsPerPage));
   }, [currentPage, itemsPerPage]);
 
   const paginate = (page: number) => {
@@ -129,12 +129,13 @@ const PaginationComponent = () => {
 
         <Picker
           selectedValue={itemsPerPage}
-          onValueChange={(value) => setItemsPerPage(Number(value))}
+          onValueChange={(value) => setItemsPerPage(value)}
           style={{ width: 100, marginTop: -12.5 }}
         >
           <Picker.Item label="4" value="4" />
           <Picker.Item label="8" value="8" />
-          <Picker.Item label="15" value="15" />
+          <Picker.Item label="12" value="12" />
+          <Picker.Item label="16" value="16" />
         </Picker>
       </View>
 
@@ -145,7 +146,7 @@ const PaginationComponent = () => {
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => <Card client={item} />}
           refreshing={isLoading}
-          onRefresh={() => fetchClients(currentPage, itemsPerPage)}
+          onRefresh={() => fetchClients(currentPage, Number(itemsPerPage))}
         />
 
         <TouchableOpacity
