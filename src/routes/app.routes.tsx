@@ -5,13 +5,7 @@ import {
 } from '@react-navigation/drawer';
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import {
-  Image,
-  SafeAreaView,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Image, SafeAreaView, View } from 'react-native';
 
 import ClientsIcon from '@assets/clients.svg';
 import HomeIcon from '@assets/home.svg';
@@ -31,6 +25,7 @@ const DrawerNavigator = createDrawerNavigator();
 export const AppRoutes = () => {
   const navigation = useNavigation();
   const [username, setUsername] = useState('');
+  const [initialRoute, setInitialRoute] = useState('');
 
   const updateUsername = async () => {
     const storedUsername = await AsyncStorage.getItem(USERNAME_COLLECTION);
@@ -38,7 +33,12 @@ export const AppRoutes = () => {
   };
 
   useEffect(() => {
-    updateUsername();
+    const checkInitialRoute = async () => {
+      const storedUsername = await AsyncStorage.getItem(USERNAME_COLLECTION);
+      setInitialRoute(storedUsername ? 'home' : 'greetings');
+      setUsername(storedUsername || '');
+    };
+    checkInitialRoute();
   }, []);
 
   useEffect(() => {
@@ -46,7 +46,6 @@ export const AppRoutes = () => {
     return unsubscribe;
   }, [navigation]);
 
-  // Add a new effect to listen for state changes
   useEffect(() => {
     const unsubscribe = navigation.addListener('state', updateUsername);
     return unsubscribe;
@@ -57,6 +56,10 @@ export const AppRoutes = () => {
     navigation.navigate('greetings');
     updateUsername();
   };
+
+  if (!initialRoute) {
+    return null;
+  }
 
   return (
     <DrawerNavigator.Navigator
@@ -82,7 +85,7 @@ export const AppRoutes = () => {
         drawerContentContainerStyle: { flex: 1 },
         drawerContentStyle: { flex: 1 },
       }}
-      initialRouteName={username ? 'home' : 'greetings'}
+      initialRouteName={initialRoute}
     >
       <DrawerNavigator.Screen
         name="home"
